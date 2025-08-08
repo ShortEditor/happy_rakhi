@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raksha Bandhan Wishes - Cinematic Glow & Fireworks</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@300&display=swap');
+
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      color: #fef4e1;
+      background: #0a0a20;
+      position: relative;
+    }
+
+    /* Animated glowing gradient background container */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -30%;
+      left: -30%;
+      width: 160vw;
+      height: 160vh;
+      background:
+        radial-gradient(circle at 20% 30%, #ff6a00, transparent 40%),
+        radial-gradient(circle at 80% 70%, #ffd600, transparent 40%),
+        radial-gradient(circle at 50% 50%, #ff4500, transparent 50%);
+      background-blend-mode: screen;
+      animation: glowShift 20s linear infinite alternate;
+      filter: blur(140px);
+      z-index: -1;
+    }
+
+    @keyframes glowShift {
+      0% {
+        background-position: 20% 30%, 80% 70%, 50% 50%;
+      }
+      50% {
+        background-position: 40% 50%, 60% 30%, 70% 60%;
+      }
+      100% {
+        background-position: 20% 30%, 80% 70%, 50% 50%;
+      }
+    }
+
+    /* Canvas fireworks full screen */
+    #canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Container with content */
+    .container {
+      position: relative;
+      z-index: 10;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      user-select: none;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 5vw;
+      color: #fff;
+      text-shadow:
+        0 0 10px #ffae00,
+        0 0 20px #ffae00,
+        0 0 30px #ff6a00;
+      animation: titlePulse 4s ease-in-out infinite;
+      margin-bottom: 0.5rem;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% {
+        text-shadow:
+          0 0 10px #ffae00,
+          0 0 20px #ffae00,
+          0 0 30px #ff6a00;
+        transform: scale(1);
+      }
+      50% {
+        text-shadow:
+          0 0 30px #ffd600,
+          0 0 60px #ffd600,
+          0 0 90px #ff8c00;
+        transform: scale(1.05);
+      }
+    }
+
+    p.subtitle {
+      font-size: 1.3rem;
+      color: #ffe4a3;
+      margin-bottom: 3rem;
+      text-shadow: 0 0 8px rgba(255, 174, 0, 0.7);
+      animation: fadeInSlideUp 2s ease forwards;
+      opacity: 0;
+      animation-delay: 1.5s;
+    }
+
+    @keyframes fadeInSlideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    }
+
+    /* Rakhi thread glowing animated */
+    .ribbon {
+      width: 80vw;
+      height: 8px;
+      background: linear-gradient(90deg, #ff6700, #ffae00, #ff6700);
+      border-radius: 999px;
+      box-shadow:
+        0 0 15px #ff6700,
+        0 0 25px #ffae00,
+        0 0 40px #ff6700;
+      position: relative;
+      overflow: visible;
+      filter: drop-shadow(0 0 8px #ff9b33);
+      animation: flickerGlow 3s infinite alternate ease-in-out;
+      margin-bottom: 4rem;
+    }
+
+    @keyframes flickerGlow {
+      0% {
+        box-shadow:
+          0 0 15px #ff6700,
+          0 0 25px #ffae00,
+          0 0 40px #ff6700;
+        filter: drop-shadow(0 0 8px #ff9b33);
+        opacity: 1;
+      }
+      50% {
+        box-shadow:
+          0 0 20px #ff9400,
+          0 0 40px #ffd100,
+          0 0 60px #ff8a00;
+        filter: drop-shadow(0 0 15px #ffd100);
+        opacity: 0.85;
+      }
+      100% {
+        box-shadow:
+          0 0 15px #ff6700,
+          0 0 25px #ffae00,
+          0 0 40px #ff6700;
+        filter: drop-shadow(0 0 8px #ff9b33);
+        opacity: 1;
+      }
+    }
+
+    .wishes {
+      max-width: 600px;
+      font-size: 1.3rem;
+      font-weight: 400;
+      line-height: 1.8;
+      color: #ffdf9a;
+      text-shadow: 0 0 5px #ffb84d;
+      animation: fadeInUp 3s ease forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Small sparkle particles */
+    #sparkleCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 8vw;
+      }
+      .wishes {
+        font-size: 1.1rem;
+      }
+      .ribbon {
+        width: 90vw;
+        height: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="canvas"></canvas>
+  <canvas id="sparkleCanvas"></canvas>
+
+  <div class="container">
+    <h1>Happy Raksha Bandhan</h1>
+    <p class="subtitle">A celebration of love, protection, and eternal bond</p>
+
+    <div class="ribbon"></div>
+
+    <div class="wishes">
+      <p>To my beloved sister, may your life shine as bright as these fireworks, filled with joy, health, and endless success.</p>
+      <p>Thank you for always protecting me. Happy Rakhi!</p>
+    </div>
+  </div>
+
+  <script>
+    // Fireworks canvas setup and animation
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let cw, ch;
+
+    function resize() {
+      cw = canvas.width = window.innerWidth;
+      ch = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Particle class for fireworks
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = Math.random() * 2 + 1;
+        this.color = color;
+        this.speed = Math.random() * 5 + 2;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.vx = Math.cos(this.angle) * this.speed;
+        this.vy = Math.sin(this.angle) * this.speed;
+        this.alpha = 1;
+        this.decay = 0.015 + Math.random() * 0.015;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= this.decay;
+        this.radius *= 0.95;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha > 0 ? this.alpha : 0;
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Firework class with color variety and random speed
+    class Firework {
+      constructor() {
+        this.x = Math.random() * cw;
+        this.y = ch + 10;
+        this.targetY = Math.random() * ch * 0.6 + ch * 0.1;
+        this.color = `hsl(${Math.floor(Math.random() * 40 + 20)}, 100%, 60%)`; // warm range oranges/yellows
+        this.speed = Math.random() * 4 + 6;
+        this.particles = [];
+        this.exploded = false;
+        this.alpha = 1;
+      }
+      update() {
+        if (!this.exploded) {
+          this.y -= this.speed;
+          if (this.y <= this.targetY) {
+            this.exploded = true;
+            this.createParticles();
+          }
+        } else {
+          this.alpha -= 0.02;
+        }
+        this.particles.forEach(p => p.update());
+        this.particles = this.particles.filter(p => p.alpha > 0 && p.radius > 0.5);
+      }
+      createParticles() {
+        let count = 60 + Math.floor(Math.random() * 40);
+        for (let i = 0; i < count; i++) {
+          this.particles.push(new Particle(this.x, this.y, this.color));
+        }
+      }
+      draw() {
+        if (!this.exploded) {
+          ctx.save();
+          ctx.fillStyle = this.color;
+          ctx.shadowColor = this.color;
+          ctx.shadowBlur = 15;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+        this.particles.forEach(p => p.draw());
+      }
+    }
+
+    let fireworks = [];
+
+    function animate() {
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.fillStyle = 'rgba(10, 10, 32, 0.25)';
+      ctx.fillRect(0, 0, cw, ch);
+
+      if (fireworks.length < 8) {
+        fireworks.push(new Firework());
+      }
+
+      fireworks.forEach((fw, i) => {
+        fw.update();
+        fw.draw();
+        if (fw.alpha <= 0 && fw.particles.length === 0) {
+          fireworks.splice(i, 1);
+        }
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Sparkle particles for subtle glowing stars drifting
+
+    const sparkleCanvas = document.getElementById('sparkleCanvas');
+    const sCtx = sparkleCanvas.getContext('2d');
+    let sw, sh;
+
+    function sparkleResize() {
+      sw = sparkleCanvas.width = window.innerWidth;
+      sh = sparkleCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', sparkleResize);
+    sparkleResize();
+
+    class Sparkle {
+      constructor() {
+        this.x = Math.random() * sw;
+        this.y = Math.random() * sh;
+        this.radius = Math.random() * 1.5 + 0.5;
+        this.alpha = Math.random();
+        this.speedY = Math.random() * 0.2 + 0.05;
+        this.speedX = (Math.random() - 0.5) * 0.1;
+        this.phase = Math.random() * 2 * Math.PI;
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        this.alpha += Math.sin(this.phase) * 0.02;
+        if(this.alpha > 1) this.alpha = 1;
+        if(this.alpha < 0) this.alpha = 0;
+        this.phase += 0.03;
+        if(this.y < 0) this.y = sh;
+        if(this.x < 0) this.x = sw;
+        if(this.x > sw) this.x = 0;
+      }
+      draw() {
+        sCtx.save();
+        sCtx.beginPath();
+        sCtx.shadowBlur = 6;
+        sCtx.shadowColor = "rgba(255, 174, 0, " + this.alpha + ")";
+        sCtx.fillStyle = "rgba(255, 174, 0, " + this.alpha + ")";
+        sCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        sCtx.fill();
+        sCtx.restore();
+      }
+    }
+
+    const sparkles = [];
+    for(let i = 0; i < 80; i++) {
+      sparkles.push(new Sparkle());
+    }
+
+    function sparkleAnimate() {
+      sCtx.clearRect(0, 0, sw, sh);
+      sparkles.forEach(sparkle => {
+        sparkle.update();
+        sparkle.draw();
+      });
+      requestAnimationFrame(sparkleAnimate);
+    }
+
+    sparkleAnimate();
+
+  </script>
+</body>
+</html>
