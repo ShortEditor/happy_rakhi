@@ -14,6 +14,8 @@
       color: #fef4e1;
       background: #0a0a20;
       position: relative;
+      /* Hint for GPU acceleration */
+      will-change: background-color;
     }
 
     /* Animated glowing gradient background container */
@@ -32,6 +34,7 @@
       animation: glowShift 20s linear infinite alternate;
       filter: blur(140px);
       z-index: -1;
+      will-change: background-position;
     }
 
     @keyframes glowShift {
@@ -47,13 +50,14 @@
     }
 
     /* Canvas fireworks full screen */
-    #canvas {
+    #canvas, #sparkleCanvas {
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
       z-index: 0;
       pointer-events: none;
+      will-change: transform;
     }
 
     /* Container with content */
@@ -135,6 +139,7 @@
       filter: drop-shadow(0 0 8px #ff9b33);
       animation: flickerGlow 3s infinite alternate ease-in-out;
       margin-bottom: 4rem;
+      will-change: box-shadow, filter, opacity;
     }
 
     @keyframes flickerGlow {
@@ -186,16 +191,6 @@
       }
     }
 
-    /* Small sparkle particles */
-    #sparkleCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 1;
-    }
-
     /* Responsive */
     @media (max-width: 600px) {
       h1 {
@@ -223,12 +218,15 @@
     <div class="ribbon"></div>
 
     <div class="wishes">
-      <p>To my beloved sister, may your life shine as bright as these fireworks, filled with joy, health, and endless success.</p>
-      <p>Thank you for always protecting me. Happy Rakhi!</p>
+      <p>To my beloved sister sneha, may your life shine as bright as these fireworks, filled with joy, health, and endless success.</p>
+      <p>Thank you for always protecting me. Happy Rakhi! </p>
     </div>
   </div>
 
   <script>
+    // Detect if device is mobile (basic check)
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+
     // Fireworks canvas setup and animation
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -248,12 +246,12 @@
         this.y = y;
         this.radius = Math.random() * 2 + 1;
         this.color = color;
-        this.speed = Math.random() * 5 + 2;
+        this.speed = Math.random() * (isMobile ? 3 : 5) + 2;
         this.angle = Math.random() * 2 * Math.PI;
         this.vx = Math.cos(this.angle) * this.speed;
         this.vy = Math.sin(this.angle) * this.speed;
         this.alpha = 1;
-        this.decay = 0.015 + Math.random() * 0.015;
+        this.decay = (0.015 + Math.random() * 0.015) * (isMobile ? 1.5 : 1);
       }
       update() {
         this.x += this.vx;
@@ -266,7 +264,7 @@
         ctx.globalAlpha = this.alpha > 0 ? this.alpha : 0;
         ctx.fillStyle = this.color;
         ctx.shadowColor = this.color;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = isMobile ? 5 : 10; // reduced shadow blur on mobile
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -281,7 +279,7 @@
         this.y = ch + 10;
         this.targetY = Math.random() * ch * 0.6 + ch * 0.1;
         this.color = `hsl(${Math.floor(Math.random() * 40 + 20)}, 100%, 60%)`; // warm range oranges/yellows
-        this.speed = Math.random() * 4 + 6;
+        this.speed = Math.random() * (isMobile ? 3 : 4) + (isMobile ? 4 : 6);
         this.particles = [];
         this.exploded = false;
         this.alpha = 1;
@@ -294,13 +292,13 @@
             this.createParticles();
           }
         } else {
-          this.alpha -= 0.02;
+          this.alpha -= 0.03 * (isMobile ? 1.5 : 1);
         }
         this.particles.forEach(p => p.update());
         this.particles = this.particles.filter(p => p.alpha > 0 && p.radius > 0.5);
       }
       createParticles() {
-        let count = 60 + Math.floor(Math.random() * 40);
+        let count = (isMobile ? 25 : 60) + Math.floor(Math.random() * (isMobile ? 10 : 40));
         for (let i = 0; i < count; i++) {
           this.particles.push(new Particle(this.x, this.y, this.color));
         }
@@ -310,7 +308,7 @@
           ctx.save();
           ctx.fillStyle = this.color;
           ctx.shadowColor = this.color;
-          ctx.shadowBlur = 15;
+          ctx.shadowBlur = isMobile ? 10 : 15; // lighter blur on mobile
           ctx.beginPath();
           ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
           ctx.fill();
@@ -322,12 +320,24 @@
 
     let fireworks = [];
 
-    function animate() {
+    // Limit max fireworks on mobile for performance
+    const maxFireworks = isMobile ? 4 : 8;
+
+    // Control frame rate for mobile to reduce CPU load
+    let lastFrameTime = 0;
+    const fpsInterval = isMobile ? 1000 / 30 : 1000 / 60; // 30fps mobile, 60fps desktop
+
+    function animate(time = 0) {
+      requestAnimationFrame(animate);
+
+      if (time - lastFrameTime < fpsInterval) return;
+      lastFrameTime = time;
+
       ctx.clearRect(0, 0, cw, ch);
       ctx.fillStyle = 'rgba(10, 10, 32, 0.25)';
       ctx.fillRect(0, 0, cw, ch);
 
-      if (fireworks.length < 8) {
+      if (fireworks.length < maxFireworks) {
         fireworks.push(new Firework());
       }
 
@@ -338,8 +348,6 @@
           fireworks.splice(i, 1);
         }
       });
-
-      requestAnimationFrame(animate);
     }
 
     animate();
@@ -361,10 +369,10 @@
       constructor() {
         this.x = Math.random() * sw;
         this.y = Math.random() * sh;
-        this.radius = Math.random() * 1.5 + 0.5;
+        this.radius = Math.random() * (isMobile ? 1 : 1.5) + 0.5;
         this.alpha = Math.random();
-        this.speedY = Math.random() * 0.2 + 0.05;
-        this.speedX = (Math.random() - 0.5) * 0.1;
+        this.speedY = Math.random() * (isMobile ? 0.12 : 0.2) + (isMobile ? 0.02 : 0.05);
+        this.speedX = (Math.random() - 0.5) * (isMobile ? 0.06 : 0.1);
         this.phase = Math.random() * 2 * Math.PI;
       }
       update() {
@@ -381,7 +389,7 @@
       draw() {
         sCtx.save();
         sCtx.beginPath();
-        sCtx.shadowBlur = 6;
+        sCtx.shadowBlur = isMobile ? 3 : 6;
         sCtx.shadowColor = "rgba(255, 174, 0, " + this.alpha + ")";
         sCtx.fillStyle = "rgba(255, 174, 0, " + this.alpha + ")";
         sCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -390,18 +398,27 @@
       }
     }
 
+    // Reduce sparkle count on mobile
+    const sparkleCount = isMobile ? 40 : 80;
     const sparkles = [];
-    for(let i = 0; i < 80; i++) {
+    for(let i = 0; i < sparkleCount; i++) {
       sparkles.push(new Sparkle());
     }
 
-    function sparkleAnimate() {
+    // Throttle sparkle animation same as fireworks
+    let lastSparkleFrame = 0;
+
+    function sparkleAnimate(time = 0) {
+      requestAnimationFrame(sparkleAnimate);
+
+      if (time - lastSparkleFrame < fpsInterval) return;
+      lastSparkleFrame = time;
+
       sCtx.clearRect(0, 0, sw, sh);
       sparkles.forEach(sparkle => {
         sparkle.update();
         sparkle.draw();
       });
-      requestAnimationFrame(sparkleAnimate);
     }
 
     sparkleAnimate();
