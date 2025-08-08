@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Raksha Bandhan Wishes - Cinematic Glow & Fireworks</title>
+  <title>Raksha Bandhan Wishes - Optimized Cinematic Glow & Fireworks</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@300&display=swap');
 
@@ -14,11 +14,9 @@
       color: #fef4e1;
       background: #0a0a20;
       position: relative;
-      /* Hint for GPU acceleration */
       will-change: background-color;
     }
 
-    /* Animated glowing gradient background container */
     body::before {
       content: '';
       position: fixed;
@@ -49,8 +47,7 @@
       }
     }
 
-    /* Canvas fireworks full screen */
-    #canvas, #sparkleCanvas {
+    #canvas {
       position: fixed;
       top: 0; left: 0;
       width: 100vw;
@@ -58,9 +55,9 @@
       z-index: 0;
       pointer-events: none;
       will-change: transform;
+      image-rendering: pixelated;
     }
 
-    /* Container with content */
     .container {
       position: relative;
       z-index: 10;
@@ -124,7 +121,6 @@
       }
     }
 
-    /* Rakhi thread glowing animated */
     .ribbon {
       width: 80vw;
       height: 8px;
@@ -191,7 +187,6 @@
       }
     }
 
-    /* Responsive */
     @media (max-width: 600px) {
       h1 {
         font-size: 8vw;
@@ -209,7 +204,6 @@
 <body>
 
   <canvas id="canvas"></canvas>
-  <canvas id="sparkleCanvas"></canvas>
 
   <div class="container">
     <h1>Happy Raksha Bandhan</h1>
@@ -218,40 +212,48 @@
     <div class="ribbon"></div>
 
     <div class="wishes">
-      <p>To my beloved sister sneha, may your life shine as bright as these fireworks, filled with joy, health, and endless success.</p>
-      <p>Thank you for always protecting me. Happy Rakhi! </p>
+      <p>To my beloved sister Sneha, may your life shine as bright as these fireworks, filled with joy, health, and endless success.</p>
+      <p>Thank you for always protecting me. Happy Rakhi!</p>
     </div>
   </div>
 
   <script>
-    // Detect if device is mobile (basic check)
+    // Mobile detection
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 
-    // Fireworks canvas setup and animation
+    // Setup canvas with reduced resolution on mobile for performance
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let cw, ch;
 
     function resize() {
-      cw = canvas.width = window.innerWidth;
-      ch = canvas.height = window.innerHeight;
+      cw = window.innerWidth;
+      ch = window.innerHeight;
+      // Reduce resolution on mobile (half)
+      canvas.width = isMobile ? cw / 2 : cw;
+      canvas.height = isMobile ? ch / 2 : ch;
+      canvas.style.width = cw + 'px';
+      canvas.style.height = ch + 'px';
+      // Scale context for resolution reduction
+      if (isMobile) ctx.setTransform(2, 0, 0, 2, 0, 0);
+      else ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
     window.addEventListener('resize', resize);
     resize();
 
-    // Particle class for fireworks
+    // Particle class for fireworks without shadow for mobile
     class Particle {
       constructor(x, y, color) {
         this.x = x;
         this.y = y;
-        this.radius = Math.random() * 2 + 1;
+        this.radius = Math.random() * 1.5 + 0.5;
         this.color = color;
-        this.speed = Math.random() * (isMobile ? 3 : 5) + 2;
+        this.speed = Math.random() * (isMobile ? 2 : 5) + 1;
         this.angle = Math.random() * 2 * Math.PI;
         this.vx = Math.cos(this.angle) * this.speed;
         this.vy = Math.sin(this.angle) * this.speed;
         this.alpha = 1;
-        this.decay = (0.015 + Math.random() * 0.015) * (isMobile ? 1.5 : 1);
+        this.decay = 0.02 + Math.random() * 0.02;
       }
       update() {
         this.x += this.vx;
@@ -263,8 +265,10 @@
         ctx.save();
         ctx.globalAlpha = this.alpha > 0 ? this.alpha : 0;
         ctx.fillStyle = this.color;
-        ctx.shadowColor = this.color;
-        ctx.shadowBlur = isMobile ? 5 : 10; // reduced shadow blur on mobile
+        if (!isMobile) {
+          ctx.shadowColor = this.color;
+          ctx.shadowBlur = 8;
+        }
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -272,14 +276,13 @@
       }
     }
 
-    // Firework class with color variety and random speed
     class Firework {
       constructor() {
         this.x = Math.random() * cw;
         this.y = ch + 10;
         this.targetY = Math.random() * ch * 0.6 + ch * 0.1;
-        this.color = `hsl(${Math.floor(Math.random() * 40 + 20)}, 100%, 60%)`; // warm range oranges/yellows
-        this.speed = Math.random() * (isMobile ? 3 : 4) + (isMobile ? 4 : 6);
+        this.color = `hsl(${Math.floor(Math.random() * 40 + 20)}, 100%, 60%)`;
+        this.speed = Math.random() * (isMobile ? 3 : 4) + (isMobile ? 3 : 6);
         this.particles = [];
         this.exploded = false;
         this.alpha = 1;
@@ -292,13 +295,13 @@
             this.createParticles();
           }
         } else {
-          this.alpha -= 0.03 * (isMobile ? 1.5 : 1);
+          this.alpha -= 0.04;
         }
         this.particles.forEach(p => p.update());
         this.particles = this.particles.filter(p => p.alpha > 0 && p.radius > 0.5);
       }
       createParticles() {
-        let count = (isMobile ? 25 : 60) + Math.floor(Math.random() * (isMobile ? 10 : 40));
+        let count = isMobile ? 10 : 60;
         for (let i = 0; i < count; i++) {
           this.particles.push(new Particle(this.x, this.y, this.color));
         }
@@ -307,8 +310,10 @@
         if (!this.exploded) {
           ctx.save();
           ctx.fillStyle = this.color;
-          ctx.shadowColor = this.color;
-          ctx.shadowBlur = isMobile ? 10 : 15; // lighter blur on mobile
+          if (!isMobile) {
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 10;
+          }
           ctx.beginPath();
           ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
           ctx.fill();
@@ -319,23 +324,21 @@
     }
 
     let fireworks = [];
+    const maxFireworks = isMobile ? 2 : 8;
 
-    // Limit max fireworks on mobile for performance
-    const maxFireworks = isMobile ? 4 : 8;
-
-    // Control frame rate for mobile to reduce CPU load
-    let lastFrameTime = 0;
-    const fpsInterval = isMobile ? 1000 / 30 : 1000 / 60; // 30fps mobile, 60fps desktop
+    // Throttle FPS for mobile to 15fps for big performance gain
+    let lastTime = 0;
+    const fpsInterval = isMobile ? 1000 / 15 : 1000 / 60;
 
     function animate(time = 0) {
       requestAnimationFrame(animate);
 
-      if (time - lastFrameTime < fpsInterval) return;
-      lastFrameTime = time;
+      if (time - lastTime < fpsInterval) return;
+      lastTime = time;
 
-      ctx.clearRect(0, 0, cw, ch);
-      ctx.fillStyle = 'rgba(10, 10, 32, 0.25)';
-      ctx.fillRect(0, 0, cw, ch);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = isMobile ? 'rgba(10, 10, 32, 0.4)' : 'rgba(10, 10, 32, 0.25)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       if (fireworks.length < maxFireworks) {
         fireworks.push(new Firework());
@@ -351,77 +354,6 @@
     }
 
     animate();
-
-    // Sparkle particles for subtle glowing stars drifting
-
-    const sparkleCanvas = document.getElementById('sparkleCanvas');
-    const sCtx = sparkleCanvas.getContext('2d');
-    let sw, sh;
-
-    function sparkleResize() {
-      sw = sparkleCanvas.width = window.innerWidth;
-      sh = sparkleCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', sparkleResize);
-    sparkleResize();
-
-    class Sparkle {
-      constructor() {
-        this.x = Math.random() * sw;
-        this.y = Math.random() * sh;
-        this.radius = Math.random() * (isMobile ? 1 : 1.5) + 0.5;
-        this.alpha = Math.random();
-        this.speedY = Math.random() * (isMobile ? 0.12 : 0.2) + (isMobile ? 0.02 : 0.05);
-        this.speedX = (Math.random() - 0.5) * (isMobile ? 0.06 : 0.1);
-        this.phase = Math.random() * 2 * Math.PI;
-      }
-      update() {
-        this.y -= this.speedY;
-        this.x += this.speedX;
-        this.alpha += Math.sin(this.phase) * 0.02;
-        if(this.alpha > 1) this.alpha = 1;
-        if(this.alpha < 0) this.alpha = 0;
-        this.phase += 0.03;
-        if(this.y < 0) this.y = sh;
-        if(this.x < 0) this.x = sw;
-        if(this.x > sw) this.x = 0;
-      }
-      draw() {
-        sCtx.save();
-        sCtx.beginPath();
-        sCtx.shadowBlur = isMobile ? 3 : 6;
-        sCtx.shadowColor = "rgba(255, 174, 0, " + this.alpha + ")";
-        sCtx.fillStyle = "rgba(255, 174, 0, " + this.alpha + ")";
-        sCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        sCtx.fill();
-        sCtx.restore();
-      }
-    }
-
-    // Reduce sparkle count on mobile
-    const sparkleCount = isMobile ? 40 : 80;
-    const sparkles = [];
-    for(let i = 0; i < sparkleCount; i++) {
-      sparkles.push(new Sparkle());
-    }
-
-    // Throttle sparkle animation same as fireworks
-    let lastSparkleFrame = 0;
-
-    function sparkleAnimate(time = 0) {
-      requestAnimationFrame(sparkleAnimate);
-
-      if (time - lastSparkleFrame < fpsInterval) return;
-      lastSparkleFrame = time;
-
-      sCtx.clearRect(0, 0, sw, sh);
-      sparkles.forEach(sparkle => {
-        sparkle.update();
-        sparkle.draw();
-      });
-    }
-
-    sparkleAnimate();
 
   </script>
 </body>
